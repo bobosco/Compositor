@@ -37,6 +37,7 @@ jobs:
           -configuration Release
           -derivedDataPath DerivedData
           CODE_SIGN_IDENTITY=-
+          MACOSX_DEPLOYMENT_TARGET=15.0
 
       - name: Zip the app
         run: ditto -c -k --keepParent DerivedData/Build/Products/Release/Compositor.app Compositor.zip
