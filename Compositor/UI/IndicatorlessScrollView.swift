@@ -7,19 +7,21 @@ struct IndicatorlessScrollView<Content: View>: NSViewRepresentable {
     @ViewBuilder let content: () -> Content
 
     func makeNSView(context: Context) -> Container {
-        Container(rootView: content())
+        Container(rootView: AnyView(content()))
     }
 
     func updateNSView(_ view: Container, context: Context) {
-        view.host.rootView = content()
+        view.host.rootView = AnyView(content())
         view.host.invalidateIntrinsicContentSize()
         view.updateDocumentSize()
     }
 
+    // AnyView rather than NSHostingView<Content>: the generic deallocator crashes the
+    // Swift 6.3 compiler (EarlyPerfInliner) when the deployment target is below macOS 26.
     final class Container: NSScrollView {
-        let host: NSHostingView<Content>
+        let host: NSHostingView<AnyView>
 
-        init(rootView: Content) {
+        init(rootView: AnyView) {
             host = NSHostingView(rootView: rootView)
             super.init(frame: .zero)
             drawsBackground = false
